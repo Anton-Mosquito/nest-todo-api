@@ -1,9 +1,19 @@
-export class CreateDTO {
-    title: string;
-    isComplited?: boolean;
+import { ApiProperty } from '@nestjs/swagger';
+
+export class CreateDto {
+  @ApiProperty()
+  title: string;
+  @ApiProperty({
+    required: false,
+  })
+  isCompleted?: boolean;
 }
 
-export class UpdateDTO {
-    title: string;
-    isComplited?: boolean;
+export class UpdateDto {
+  @ApiProperty()
+  title: string;
+  @ApiProperty({
+    required: false,
+  })
+  isCompleted?: boolean;
 }
