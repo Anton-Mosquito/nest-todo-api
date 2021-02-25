@@ -1,76 +1,42 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  HttpException,
-  HttpStatus,
-  NotFoundException,
-  Param,
-  Post,
-  Put,
-} from '@nestjs/common';
+import { Controller } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
+import { Crud, CrudController } from '@nestjsx/crud';
 import { Todo } from '../entities/todo.entity';
 import { TodoService } from '../services/todo.service';
-import { CreateDTO, UpdateDTO } from './dto';
 
-// Get one
-// Get many
-// Post (Create or Update)
-// Delete (Delete)
+@Crud({
+  model: {
+    type: Todo,
+  },
+})
+@ApiTags('todo')
 @Controller('rest/todo')
-export class TodoController {
-  constructor(private readonly todoService: TodoService) {}
+export class TodoController implements CrudController<Todo> {
+  constructor(public service: TodoService) {}
 
-  @Get()
-  getAllAction(): Promise<Todo[]> {
-    return this.todoService.findAll();
-  }
-
-  @Get(':id')
-  async getOneAction(@Param('id') id: string): Promise<Todo> {
-    const todo = await this.todoService.findOne(id);
-    if (todo === undefined) {
-      throw new HttpException(
-        `Todo with id=${id} not exist`,
-        HttpStatus.NOT_FOUND,
-      );
-    }
-    return todo;
-  }
-
-  @Post()
-  createAction(@Body() createDTO: CreateDTO): Promise<Todo> {
-    const todo = new Todo();
-    todo.title = createDTO.title;
-    if (createDTO.isComplited !== undefined)
-      todo.isComplited = createDTO.isComplited;
-    return this.todoService.create(todo);
-  }
-
-  @Put(':id')
-  async updateAction(
-    @Param('id') id: string,
-    @Body() { title, isComplited = false }: UpdateDTO,
-  ): Promise<Todo> {
-    const todo = await this.todoService.findOne(id);
-    if (todo === undefined) {
-      throw new NotFoundException(`Todo with id=${id} not exist`);
-    }
-    todo.title = title;
-    todo.isComplited = isComplited;
-    return this.todoService.update(todo);
-  }
-
-  @Delete(':id')
-  async deleteAction(@Param('id') id: string): Promise<{ success: boolean }> {
-    const todo = await this.todoService.findOne(id);
-    if (todo === undefined) {
-      throw new NotFoundException(`Todo with id=${id} not found`);
-    }
-    await this.todoService.remove(id);
-    return {
-      success: true,
-    };
-  }
+  // service: CrudService<Todo>;
+  // getManyBase?(req: CrudRequest): Promise<GetManyDefaultResponse<Todo> | Todo[]> {
+  //   throw new Error('Method not implemented.');
+  // }
+  // getOneBase?(req: CrudRequest): Promise<Todo> {
+  //   throw new Error('Method not implemented.');
+  // }
+  // createOneBase?(req: CrudRequest, dto: Todo): Promise<Todo> {
+  //   throw new Error('Method not implemented.');
+  // }
+  // createManyBase?(req: CrudRequest, dto: CreateManyDto<Todo>): Promise<Todo[]> {
+  //   throw new Error('Method not implemented.');
+  // }
+  // updateOneBase?(req: CrudRequest, dto: Todo): Promise<Todo> {
+  //   throw new Error('Method not implemented.');
+  // }
+  // replaceOneBase?(req: CrudRequest, dto: Todo): Promise<Todo> {
+  //   throw new Error('Method not implemented.');
+  // }
+  // deleteOneBase?(req: CrudRequest): Promise<void | Todo> {
+  //   throw new Error('Method not implemented.');
+  // }
+  // recoverOneBase?(req: CrudRequest): Promise<void | Todo> {
+  //   throw new Error('Method not implemented.');
+  // }
 }
